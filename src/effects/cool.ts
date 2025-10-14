@@ -1,4 +1,4 @@
-export const cool = (data: ImageDataArray) => {
+export default (data: ImageDataArray) => {
   for (let i = 0; i < data.length; i += 4) {
     data[i] = Math.min(255, Math.max(0, data[i] - 20))
     data[i + 1] = Math.min(255, Math.max(0, data[i + 1] + 10))

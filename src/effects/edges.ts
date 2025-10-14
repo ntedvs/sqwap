@@ -1,4 +1,4 @@
-export const edges = (data: ImageDataArray, width: number, height: number) => {
+export default (data: ImageDataArray, width: number, height: number) => {
   const output = new Uint8ClampedArray(data.length)
 
   for (let y = 1; y < height - 1; y++) {

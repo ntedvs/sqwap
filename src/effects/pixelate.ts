@@ -1,8 +1,4 @@
-export const pixelate = (
-  data: ImageDataArray,
-  width: number,
-  height: number
-) => {
+export default (data: ImageDataArray, width: number, height: number) => {
   const blockSize = 8
 
   for (let y = 0; y < height; y += blockSize) {

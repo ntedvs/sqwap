@@ -1,4 +1,4 @@
-export const ascii = (data: ImageDataArray, width: number, height: number) => {
+export default (data: ImageDataArray, width: number, height: number) => {
   const chars = " .:-=+*#%@"
   const size = 8
 

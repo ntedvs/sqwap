@@ -1,4 +1,4 @@
-export const solarize = (data: ImageDataArray) => {
+export default (data: ImageDataArray) => {
   const threshold = 128
 
   for (let i = 0; i < data.length; i += 4) {

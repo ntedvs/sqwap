@@ -1,4 +1,4 @@
-export const posterize = (data: ImageDataArray) => {
+export default (data: ImageDataArray) => {
   const levels = 4
   const step = 255 / (levels - 1)
 

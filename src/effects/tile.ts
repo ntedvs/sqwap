@@ -1,4 +1,4 @@
-export const tile = (data: ImageDataArray, width: number, height: number) => {
+export default (data: ImageDataArray, width: number, height: number) => {
   const original = new Uint8ClampedArray(data)
   const halfWidth = Math.floor(width / 2)
   const halfHeight = Math.floor(height / 2)
