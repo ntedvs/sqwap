@@ -1,4 +1,4 @@
-export default (data: ImageDataArray) => {
+export const duotone = (data: ImageDataArray) => {
   const shadowR = 25
   const shadowG = 42
   const shadowB = 86

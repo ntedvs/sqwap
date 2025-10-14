@@ -14,9 +14,17 @@
       <input id="file" type="file" hidden />
 
       <div class="flex justify-center gap-4">
-        <label for="file" class="bg-blue-200 rounded-lg px-4 py-2">File</label>
+        <label
+          for="file"
+          class="bg-blue-200 rounded-lg px-4 py-2 cursor-pointer"
+        >
+          File
+        </label>
 
-        <button id="start" class="bg-red-200 rounded-lg px-4 py-2">
+        <button
+          id="start"
+          class="bg-red-200 rounded-lg px-4 py-2 cursor-pointer"
+        >
           Camera
         </button>
       </div>
@@ -25,11 +33,13 @@
       <button id="stop">Capture</button>
     </div>
 
-    <div id="after">
+    <div id="after" hidden>
       <div class="flex justify-center items-center">
         <canvas id="canvas"></canvas>
         <p id="preview" class="absolute text-8xl text-white"></p>
       </div>
+
+      <ul id="list"></ul>
     </div>
 
     <script type="module" src="src/main.ts"></script>

@@ -1,4 +1,4 @@
-export default (data: ImageDataArray) => {
+export const rotate = (data: ImageDataArray) => {
   for (let i = 0; i < data.length; i += 4) {
     const r = data[i]
     const g = data[i + 1]

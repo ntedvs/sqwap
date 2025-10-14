@@ -1,4 +1,4 @@
-export default (data: ImageDataArray, width: number, height: number) => {
+export const paint = (data: ImageDataArray, width: number, height: number) => {
   const output = new Uint8ClampedArray(data.length)
   const radius = 5
 

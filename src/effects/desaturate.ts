@@ -1,4 +1,4 @@
-export default (data: ImageDataArray) => {
+export const desaturate = (data: ImageDataArray) => {
   for (let i = 0; i < data.length; i += 4) {
     const avg = (data[i] + data[i + 1] + data[i + 2]) / 3
     data[i] = Math.min(255, Math.max(0, avg + (data[i] - avg) * 0.5))
