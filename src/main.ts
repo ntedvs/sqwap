@@ -1,25 +1,53 @@
 import { effects } from "./collect"
 import "./style.css"
 
-const input = document.querySelector("input")!
-const text = document.querySelector("p")!
-const canvas = document.querySelector("canvas")!
+const grab = (id: string) => document.querySelector("#" + id)!
+
+const before = grab("before") as HTMLDivElement
+const after = grab("after") as HTMLDivElement
+
+const canvas = grab("canvas") as HTMLCanvasElement
 const context = canvas.getContext("2d")!
+
+const input = grab("file") as HTMLInputElement
+
+const video = grab("video") as HTMLVideoElement
+const start = grab("start") as HTMLButtonElement
+const stop = grab("stop") as HTMLButtonElement
+
+const preview = grab("preview") as HTMLParagraphElement
 
 let image: ImageData
 
+const move = (source: CanvasImageSource, width: number, height: number) => {
+  canvas.width = width
+  canvas.height = height
+
+  context.drawImage(source, 0, 0)
+  image = context.getImageData(0, 0, width, height)
+
+  before.hidden = true
+  after.hidden = false
+}
+
 input.onchange = async () => {
   const bitmap = await createImageBitmap(input.files![0])
-
-  canvas.width = bitmap.width
-  canvas.height = bitmap.height
-
-  context.drawImage(bitmap, 0, 0)
-  image = context.getImageData(0, 0, canvas.width, canvas.height)
-
-  document.querySelector("label")!.hidden = true
-  document.querySelector<HTMLDivElement>("#box")!.hidden = false
+  move(bitmap, bitmap.width, bitmap.height)
 }
+
+start.addEventListener("click", async () => {
+  video.srcObject = await navigator.mediaDevices.getUserMedia({
+    video: { facingMode: { ideal: "user" } },
+    audio: false,
+  })
+
+  video.play()
+})
+
+stop.addEventListener("click", () => {
+  const { videoWidth: width, videoHeight: height } = video
+  move(video, width, height)
+})
 
 let effect = ""
 
@@ -36,7 +64,7 @@ document.addEventListener("keydown", (e) => {
     } catch {}
 
     effect = ""
-    text.textContent = effect
+    preview.textContent = effect
 
     return
   }
@@ -44,5 +72,5 @@ document.addEventListener("keydown", (e) => {
   if (isNaN(+e.key)) return
 
   effect += e.key
-  text.textContent = effect
+  preview.textContent = effect
 })

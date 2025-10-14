@@ -22,6 +22,7 @@ import sepia from "./effects/sepia"
 import solarize from "./effects/solarize"
 import swap from "./effects/swap"
 import threshold from "./effects/threshold"
+import tile from "./effects/tile"
 import vintage from "./effects/vintage"
 import warm from "./effects/warm"
 
@@ -52,4 +53,5 @@ export const effects = {
   24: blue,
   25: swap,
   26: ascii,
+  27: tile,
 }
