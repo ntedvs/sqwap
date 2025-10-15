@@ -2,5 +2,4 @@
 
 ## To Do
 
-- Undo
 - Restart

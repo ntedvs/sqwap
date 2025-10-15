@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -8,7 +8,7 @@
   </head>
 
   <body>
-    <h1 class="text-4xl text-center my-4">Sqwap</h1>
+    <h1 class="my-4 text-center text-4xl">Sqwap</h1>
 
     <div id="before">
       <input id="file" type="file" hidden />
@@ -16,25 +16,33 @@
       <div class="flex justify-center gap-4">
         <label
           for="file"
-          class="bg-blue-200 rounded-lg px-4 py-2 cursor-pointer"
+          class="cursor-pointer rounded-lg bg-blue-200 px-4 py-2"
         >
           File
         </label>
 
         <button
           id="start"
-          class="bg-red-200 rounded-lg px-4 py-2 cursor-pointer"
+          class="cursor-pointer rounded-lg bg-red-200 px-4 py-2"
         >
           Camera
         </button>
       </div>
 
-      <video id="video"></video>
-      <button id="stop">Capture</button>
+      <div id="stream" class="mt-4 flex flex-col items-center gap-4" hidden>
+        <video id="video"></video>
+
+        <button
+          id="stop"
+          class="cursor-pointer rounded-lg bg-green-200 px-4 py-2"
+        >
+          Capture
+        </button>
+      </div>
     </div>
 
     <div id="after" hidden>
-      <div class="flex justify-center items-center">
+      <div class="flex items-center justify-center">
         <canvas id="canvas"></canvas>
         <p id="preview" class="absolute text-8xl text-white"></p>
       </div>

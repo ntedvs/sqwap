@@ -14,10 +14,13 @@ const input = grab("file") as HTMLInputElement
 const video = grab("video") as HTMLVideoElement
 const start = grab("start") as HTMLButtonElement
 const stop = grab("stop") as HTMLButtonElement
+const stream = grab("stream") as HTMLDivElement
 
 const preview = grab("preview") as HTMLParagraphElement
 
 let image: ImageData
+const undo: ImageData[] = []
+const redo: ImageData[] = []
 
 const move = (source: CanvasImageSource, width: number, height: number) => {
   canvas.width = width
@@ -25,6 +28,9 @@ const move = (source: CanvasImageSource, width: number, height: number) => {
 
   context.drawImage(source, 0, 0)
   image = context.getImageData(0, 0, width, height)
+
+  undo.length = 0
+  redo.length = 0
 
   before.hidden = true
   after.hidden = false
@@ -42,6 +48,8 @@ start.addEventListener("click", async () => {
   })
 
   video.play()
+
+  stream.hidden = false
 })
 
 stop.addEventListener("click", () => {
@@ -52,8 +60,13 @@ stop.addEventListener("click", () => {
 let effect = ""
 
 document.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
+  const key = e.key.toLowerCase()
+
+  if (key === "enter") {
     try {
+      undo.push(structuredClone(image))
+      redo.length = 0
+
       effects[+effect as keyof typeof effects](
         image.data,
         canvas.width,
@@ -69,8 +82,32 @@ document.addEventListener("keydown", (e) => {
     return
   }
 
-  if (isNaN(+e.key)) return
+  if (key === "z" && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault()
 
-  effect += e.key
+    if (undo.length === 0) return
+
+    redo.push(structuredClone(image))
+    image = undo.pop()!
+    context.putImageData(image, 0, 0)
+
+    return
+  }
+
+  if (key === "y" && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault()
+
+    if (redo.length === 0) return
+
+    undo.push(structuredClone(image))
+    image = redo.pop()!
+    context.putImageData(image, 0, 0)
+
+    return
+  }
+
+  if (isNaN(+key)) return
+
+  effect += key
   preview.textContent = effect
 })
