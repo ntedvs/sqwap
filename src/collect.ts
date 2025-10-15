@@ -64,6 +64,6 @@ all.forEach(({ name, effect }, i) => {
   const list = document.querySelector("#list")!
   const item = document.createElement("li")
 
-  item.textContent = i + 1 + ": " + name
+  item.textContent = i + 1 + ": " + name[0].toUpperCase() + name.slice(1)
   list.appendChild(item)
 })
