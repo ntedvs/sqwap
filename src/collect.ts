@@ -9,13 +9,16 @@ import edges from "./effects/edges"
 import emboss from "./effects/emboss"
 import exposure from "./effects/exposure"
 import gamma from "./effects/gamma"
+import glitch from "./effects/glitch"
 import grayscale from "./effects/grayscale"
 import green from "./effects/green"
+import halftone from "./effects/halftone"
 import invert from "./effects/invert"
 import paint from "./effects/paint"
 import pixelate from "./effects/pixelate"
 import posterize from "./effects/posterize"
 import red from "./effects/red"
+import ripple from "./effects/ripple"
 import rotate from "./effects/rotate"
 import saturate from "./effects/saturate"
 import sepia from "./effects/sepia"
@@ -56,6 +59,9 @@ const all = [
   { name: "swap", effect: swap },
   { name: "ascii", effect: ascii },
   { name: "tile", effect: tile },
+  { name: "ripple", effect: ripple },
+  { name: "glitch", effect: glitch },
+  { name: "halftone", effect: halftone },
 ]
 
 all.forEach(({ name, effect }, i) => {
