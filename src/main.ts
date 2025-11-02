@@ -22,12 +22,36 @@ let image: ImageData
 const undo: ImageData[] = []
 const redo: ImageData[] = []
 
-const move = (source: CanvasImageSource, width: number, height: number) => {
-  canvas.width = width
-  canvas.height = height
+const max = 1200
 
-  context.drawImage(source, 0, 0)
-  image = context.getImageData(0, 0, width, height)
+const scale = (width: number, height: number) => {
+  if (width <= max && height <= max) {
+    return { width, height }
+  }
+
+  const ratio = width / height
+
+  if (width > height) {
+    return {
+      width: max,
+      height: Math.round(max / ratio),
+    }
+  } else {
+    return {
+      width: Math.round(max * ratio),
+      height: max,
+    }
+  }
+}
+
+const move = (source: CanvasImageSource, width: number, height: number) => {
+  const scaled = scale(width, height)
+
+  canvas.width = scaled.width
+  canvas.height = scaled.height
+
+  context.drawImage(source, 0, 0, scaled.width, scaled.height)
+  image = context.getImageData(0, 0, scaled.width, scaled.height)
 
   undo.length = 0
   redo.length = 0
@@ -70,7 +94,7 @@ document.addEventListener("keydown", (e) => {
       effects[+effect as keyof typeof effects](
         image.data,
         canvas.width,
-        canvas.height
+        canvas.height,
       )
 
       context.putImageData(image, 0, 0)

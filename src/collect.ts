@@ -14,6 +14,8 @@ import grayscale from "./effects/grayscale"
 import green from "./effects/green"
 import halftone from "./effects/halftone"
 import invert from "./effects/invert"
+import kaleidoscope from "./effects/kaleidoscope"
+import liquid from "./effects/liquid"
 import paint from "./effects/paint"
 import pixelate from "./effects/pixelate"
 import posterize from "./effects/posterize"
@@ -27,6 +29,7 @@ import swap from "./effects/swap"
 import threshold from "./effects/threshold"
 import tile from "./effects/tile"
 import vintage from "./effects/vintage"
+import voronoi from "./effects/voronoi"
 import warm from "./effects/warm"
 
 export const effects: any = {}
@@ -62,6 +65,9 @@ const all = [
   { name: "ripple", effect: ripple },
   { name: "glitch", effect: glitch },
   { name: "halftone", effect: halftone },
+  { name: "kaleidoscope", effect: kaleidoscope },
+  { name: "liquid", effect: liquid },
+  { name: "voronoi", effect: voronoi },
 ]
 
 all.forEach(({ name, effect }, i) => {
