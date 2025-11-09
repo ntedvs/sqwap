@@ -2,94 +2,102 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Project Overview
-
-Sqwap is a browser-based image effects editor that applies pixel manipulation effects to images in real-time using Canvas API. Users can upload images or capture from camera, then apply 29+ different effects using keyboard shortcuts.
-
 ## Development Commands
 
 ```bash
-# Install dependencies
-pnpm install
-
-# Run development server
-pnpm dev
-
-# Build for production
-pnpm build
-
-# Preview production build
-pnpm preview
+npm run dev      # Start Vite dev server with HMR
+npm run build    # TypeScript check + Vite production build
+npm run preview  # Preview production build locally
 ```
+
+## Project Overview
+
+Sqwap is a keyboard-driven, browser-based image manipulation tool built with vanilla TypeScript and the Canvas API. Users upload images or capture from camera, then apply visual effects by typing numbers.
 
 ## Architecture
 
-### Effect System
+### Core Application Flow (src/main.ts)
 
-All effects are pure functions located in `src/effects/` that directly mutate the `ImageData.data` array (a `Uint8ClampedArray` of RGBA values).
+The application maintains a single `ImageData` object representing the current canvas state, with separate undo/redo stacks that store cloned `ImageData` snapshots.
 
-**Effect function signatures:**
+**Key State:**
+- `image: ImageData` - Current canvas state
+- `undo: ImageData[]` - History stack for Cmd/Ctrl+Z
+- `redo: ImageData[]` - Forward history for Cmd/Ctrl+Y
+- `effect: string` - Accumulated numeric input from keyboard
 
-- Simple effects (pixel-independent): `(data: ImageDataArray) => void`
-- Spatial effects (require positioning): `(data: ImageDataArray, width: number, height: number) => void`
+**Keyboard Interaction:**
+- Number keys (0-9): Accumulate effect ID (e.g., "1", "12", "30")
+- Enter: Apply effect from `effects` registry, push to undo stack, clear redo stack
+- Cmd/Ctrl+Z: Pop from undo, push to redo
+- Cmd/Ctrl+Y: Pop from redo, push to undo
 
-Effects are registered in `src/collect.ts` where they're:
+**Image Loading:**
+- File input: Uses `createImageBitmap()` for async loading
+- Camera: `getUserMedia()` captures video stream, "stop" button captures current frame via `move()`
 
-1. Imported and added to an array with display names
-2. Mapped to numeric keys (1-29) in the `effects` object
-3. Automatically added to the UI list with capitalized names
+The `move()` function is the single source of truth for loading new images - it resets canvas dimensions, draws the source, captures ImageData, and clears undo/redo history.
 
-**Adding a new effect:**
+### Effect Registry System (src/collect.ts)
 
-1. Create `src/effects/neweffect.ts` with default export matching signature above
-2. Import in `src/collect.ts`
-3. Add to the `all` array with `{ name: "neweffect", effect: neweffect }`
-4. Effect will auto-register and appear in UI
+The `collect.ts` module acts as the central registry. It imports all 30 effects, assigns each a numeric index (1-30), and dynamically generates the UI list.
 
-### Application Flow
+**Critical Pattern:**
+```typescript
+effects[i + 1] = effect  // 1-indexed for user-friendly keyboard input
+```
 
-**src/main.ts** contains the core application logic:
+The `effects` object is keyed by numbers (1-30), not effect names. When Enter is pressed, `main.ts` looks up `effects[+effect]` where `effect` is the accumulated string (e.g., "12").
 
-- Image loading from file input or camera capture
-- Keyboard event handling for effect selection and undo/redo
-- Canvas rendering and state management
+**Adding New Effects:**
+1. Create file in `src/effects/your-effect.ts` with default export
+2. Import in `collect.ts`
+3. Add to `all` array in desired position (position determines numeric ID)
+4. UI list and keyboard mapping update automatically
 
-**State management:**
+### Effect Implementation Pattern
 
-- `image`: Current `ImageData` object (mutated in place by effects)
-- `undo[]`: Array of previous states (created via `structuredClone`)
-- `redo[]`: Array for redo functionality
+All effects follow this signature:
+```typescript
+export default (data: Uint8ClampedArray, width?: number, height?: number) => void
+```
 
-**User interaction:**
+**Key Points:**
+- Direct mutation of pixel array (RGBA format: data[i] = R, data[i+1] = G, data[i+2] = B, data[i+3] = A)
+- Width/height optional - only needed for spatial operations (pixelate, ripple, rotate, etc.)
+- Most effects are 6-11 lines, focused on single transformation
+- No return value - mutate in place for performance
 
-1. Type numeric keys to build effect number (shown as overlay preview)
-2. Press Enter to apply the selected effect
-3. Ctrl/Cmd+Z to undo, Ctrl/Cmd+Y to redo
+**Pixel Array Access:**
+```typescript
+// Linear scan for color operations
+for (let i = 0; i < data.length; i += 4) {
+  data[i]     // Red
+  data[i + 1] // Green
+  data[i + 2] // Blue
+  data[i + 3] // Alpha
+}
 
-### Pixel Data Format
-
-The `ImageData.data` array uses RGBA format:
-
-- Index `i`: Red
-- Index `i+1`: Green
-- Index `i+2`: Blue
-- Index `i+3`: Alpha
-- Values are 0-255 (Uint8ClampedArray)
-
-**2D coordinate to array index:** `const i = (y * width + x) * 4`
-
-**Effect pattern examples:**
-
-- Per-pixel operations: Iterate `i += 4` and modify `data[i]`, `data[i+1]`, `data[i+2]`
-- Spatial operations: Use nested loops over `x`/`y`, convert to array index
-- Geometric transformations: Create `output` buffer, map source to destination pixels, then `data.set(output)`
+// 2D spatial operations
+const i = (y * width + x) * 4
+```
 
 ## TypeScript Configuration
 
-- Strict mode enabled with additional safety: `noUnusedLocals`, `noUnusedParameters`
-- Uses `verbatimModuleSyntax` and `allowImportingTsExtensions` for Vite compatibility
-- Target: ES2022 with DOM types
+The project uses strict TypeScript settings:
+- `strict: true` - All strict checks enabled
+- `noUnusedLocals` and `noUnusedParameters` - No dead code
+- `verbatimModuleSyntax` - Explicit type imports
+- `erasableSyntaxOnly` - Future-proof for type stripping
 
-## Build Tool Notes
+When adding code, ensure it passes `tsc` checks (run via `npm run build`).
 
-The project uses `rolldown-vite` (specified in package.json overrides) instead of standard Vite. This is a performance-optimized variant and should not be changed without testing.
+## Build Tooling
+
+- **Vite**: Using `rolldown-vite@7.1.17` (Rust-based bundler) instead of standard Vite
+- **Tailwind CSS 4.x**: Via `@tailwindcss/vite` plugin, configured in `src/style.css`
+- **Prettier**: Auto-formats with `prettier-plugin-tailwindcss` for class ordering
+
+## Styling Conventions
+
+Pure Tailwind utility classes in `index.html`. No CSS-in-JS, no component frameworks. Keep all styling declarative in HTML attributes.
