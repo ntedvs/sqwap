@@ -26,6 +26,7 @@ import saturate from "./effects/saturate"
 import sepia from "./effects/sepia"
 import solarize from "./effects/solarize"
 import swap from "./effects/swap"
+import swirl from "./effects/swirl"
 import threshold from "./effects/threshold"
 import tile from "./effects/tile"
 import vintage from "./effects/vintage"
@@ -67,6 +68,7 @@ const all = [
   { name: "halftone", effect: halftone },
   { name: "kaleidoscope", effect: kaleidoscope },
   { name: "liquid", effect: liquid },
+  { name: "swirl", effect: swirl },
   { name: "voronoi", effect: voronoi },
 ]
 
